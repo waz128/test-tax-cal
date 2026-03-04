@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Australian Tax Calculator 2024-25</title>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #f5f7fa;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 700px;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 600;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+
+    button {
+        margin-top: 20px;
+        width: 100%;
+        padding: 14px;
+        font-size: 18px;
+        background: #0066ff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #004bcc;
+    }
+
+    .results {
+        margin-top: 30px;
+        background: #f1f4f8;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .result-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 8px 0;
+    }
+
+    .highlight {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    footer {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #777;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Australian Tax Calculator 2024–25</h1>
+
+    <label>Annual Income (AUD)</label>
+    <input type="number" id="income" placeholder="e.g. 90000">
+
+    <label>
+        <input type="checkbox" id="help"> I have a HELP/HECS debt
+    </label>
+
+    <button onclick="calculateTax()">Calculate</button>
+
+    <div class="results" id="results" style="display:none;">
+        <div class="result-row">
+            <span>Income Tax</span>
+            <span id="incomeTax"></span>
+        </div>
+        <div class="result-row">
+            <span>Medicare Levy (2%)</span>
+            <span id="medicare"></span>
+        </div>
+        <div class="result-row">
+            <span>HELP Repayment</span>
+            <span id="helpRepayment"></span>
+        </div>
+        <hr>
+        <div class="result-row highlight">
+            <span>Net Annual Income</span>
+            <span id="netIncome"></span>
+        </div>
+        <div class="result-row">
+            <span>Monthly</span>
+            <span id="monthly"></span>
+        </div>
+        <div class="result-row">
+            <span>Fortnightly</span>
+            <span id="fortnightly"></span>
+        </div>
+        <div class="result-row">
+            <span>Weekly</span>
+            <span id="weekly"></span>
+        </div>
+    </div>
+
+    <footer>
+        Estimates only. Based on 2024–25 resident tax rates.
+    </footer>
+</div>
+
+<script>
+
+function calculateIncomeTax(income) {
+    if (income <= 18200) return 0;
+    if (income <= 45000) return (income - 18200) * 0.16;
+    if (income <= 135000) return 4288 + (income - 45000) * 0.30;
+    if (income <= 190000) return 31288 + (income - 135000) * 0.37;
+    return 51638 + (income - 190000) * 0.45;
+}
+
+function calculateHELP(income) {
+    if (income < 51550) return 0;
+
+    // Simplified HELP bands
+    if (income < 59518) return income * 0.01;
+    if (income < 63089) return income * 0.02;
+    if (income < 66875) return income * 0.025;
+    if (income < 70888) return income * 0.03;
+    if (income < 75141) return income * 0.035;
+    if (income < 79650) return income * 0.04;
+    if (income < 84429) return income * 0.045;
+    if (income < 89505) return income * 0.05;
+    if (income < 94900) return income * 0.055;
+    return income * 0.10;
+}
+
+function formatCurrency(value) {
+    return value.toLocaleString('en-AU', { 
+        style: 'currency', 
+        currency: 'AUD',
+        minimumFractionDigits: 2
+    });
+}
+
+function calculateTax() {
+    const income = parseFloat(document.getElementById("income").value);
+    const hasHELP = document.getElementById("help").checked;
+
+    if (!income || income <= 0) {
+        alert("Please enter a valid income.");
+        return;
+    }
+
+    const incomeTax = calculateIncomeTax(income);
+    const medicare = income * 0.02;
+    const helpRepayment = hasHELP ? calculateHELP(income) : 0;
+
+    const totalTax = incomeTax + medicare + helpRepayment;
+    const netIncome = income - totalTax;
+
+    document.getElementById("incomeTax").innerText = formatCurrency(incomeTax);
+    document.getElementById("medicare").innerText = formatCurrency(medicare);
+    document.getElementById("helpRepayment").innerText = formatCurrency(helpRepayment);
+    document.getElementById("netIncome").innerText = formatCurrency(netIncome);
+    document.getElementById("monthly").innerText = formatCurrency(netIncome / 12);
+    document.getElementById("fortnightly").innerText = formatCurrency(netIncome / 26);
+    document.getElementById("weekly").innerText = formatCurrency(netIncome / 52);
+
+    document.getElementById("results").style.display = "block";
+}
+
+</script>
+
+</body>
+</html>
