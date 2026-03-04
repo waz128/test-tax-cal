@@ -4,198 +4,88 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Australian Tax Calculator 2024-25</title>
+
 <style>
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: #f5f7fa;
-        margin: 0;
-        padding: 0;
-    }
-
-    .container {
-        max-width: 700px;
-        margin: 40px auto;
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-    label {
-        display: block;
-        margin-top: 15px;
-        font-weight: 600;
-    }
-
-    input, select {
-        width: 100%;
-        padding: 10px;
-        margin-top: 5px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        font-size: 16px;
-    }
-
-    button {
-        margin-top: 20px;
-        width: 100%;
-        padding: 14px;
-        font-size: 18px;
-        background: #0066ff;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        background: #004bcc;
-    }
-
-    .results {
-        margin-top: 30px;
-        background: #f1f4f8;
-        padding: 20px;
-        border-radius: 10px;
-    }
-
-    .result-row {
-        display: flex;
-        justify-content: space-between;
-        margin: 8px 0;
-    }
-
-    .highlight {
-        font-size: 20px;
-        font-weight: bold;
-    }
-
-    footer {
-        margin-top: 20px;
-        font-size: 12px;
-        color: #777;
-        text-align: center;
-    }
+body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#f4f6f9; margin:0; }
+.container { max-width:900px; margin:40px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.08); }
+h1 { text-align:center; margin-bottom:20px; }
+.section { margin-top:25px; }
+label { display:block; margin-top:15px; font-weight:600; }
+input, select { width:100%; padding:10px; margin-top:5px; border-radius:6px; border:1px solid #ccc; font-size:16px; }
+.checkbox-row { margin-top:10px; }
+button { margin-top:20px; width:100%; padding:14px; font-size:18px; background:#0066ff; color:white; border:none; border-radius:8px; cursor:pointer; }
+button:hover { background:#004bcc; }
+.results { margin-top:30px; background:#f1f4f8; padding:20px; border-radius:10px; display:none; }
+.result-row { display:flex; justify-content:space-between; margin:8px 0; }
+.highlight { font-weight:bold; font-size:20px; }
+table { width:100%; border-collapse:collapse; margin-top:15px; }
+th, td { padding:10px; border:1px solid #ddd; text-align:left; }
+th { background:#f0f0f0; }
+footer { text-align:center; margin-top:30px; font-size:12px; color:#777; }
 </style>
+
 </head>
 <body>
-
 <div class="container">
-    <h1>Australian Tax Calculator 2024–25</h1>
 
-    <label>Annual Income (AUD)</label>
-    <input type="number" id="income" placeholder="e.g. 90000">
+<h1>Australian Tax Calculator 2024–25</h1>
 
-    <label>
-        <input type="checkbox" id="help"> I have a HELP/HECS debt
-    </label>
+<div class="section">
+<label>Annual Income (AUD)</label>
+<input type="number" id="income" placeholder="e.g. 90000">
 
-    <button onclick="calculateTax()">Calculate</button>
+<label>Residency Status</label>
+<select id="residentStatus">
+<option value="resident">Australian Resident</option>
+<option value="nonresident">Foreign / Non-Resident</option>
+</select>
 
-    <div class="results" id="results" style="display:none;">
-        <div class="result-row">
-            <span>Income Tax</span>
-            <span id="incomeTax"></span>
-        </div>
-        <div class="result-row">
-            <span>Medicare Levy (2%)</span>
-            <span id="medicare"></span>
-        </div>
-        <div class="result-row">
-            <span>HELP Repayment</span>
-            <span id="helpRepayment"></span>
-        </div>
-        <hr>
-        <div class="result-row highlight">
-            <span>Net Annual Income</span>
-            <span id="netIncome"></span>
-        </div>
-        <div class="result-row">
-            <span>Monthly</span>
-            <span id="monthly"></span>
-        </div>
-        <div class="result-row">
-            <span>Fortnightly</span>
-            <span id="fortnightly"></span>
-        </div>
-        <div class="result-row">
-            <span>Weekly</span>
-            <span id="weekly"></span>
-        </div>
-    </div>
+<div class="checkbox-row"><input type="checkbox" id="includesSuper"> Income includes Super (11.5%)</div>
+<div class="checkbox-row"><input type="checkbox" id="help"> I have a HELP/HECS debt</div>
 
-    <footer>
-        Estimates only. Based on 2024–25 resident tax rates.
-    </footer>
+<button onclick="calculateTax()">Calculate</button>
 </div>
 
+<div class="results" id="results">
+<div class="result-row"><span>Taxable Income</span><span id="taxableIncome"></span></div>
+<div class="result-row"><span>Income Tax</span><span id="incomeTax"></span></div>
+<div class="result-row"><span>Medicare Levy (2%)</span><span id="medicare"></span></div>
+<div class="result-row"><span>HELP Repayment</span><span id="helpRepayment"></span></div>
+<hr>
+<div class="result-row highlight"><span>Net Annual Income</span><span id="netIncome"></span></div>
+<div class="result-row"><span>Monthly</span><span id="monthly"></span></div>
+<div class="result-row"><span>Fortnightly</span><span id="fortnightly"></span></div>
+<div class="result-row"><span>Weekly</span><span id="weekly"></span></div>
+</div>
+
+<div class="section">
+<h2>2024–25 Tax Brackets</h2>
+<h3>Australian Resident</h3>
+<table>
+<tr><th>Taxable Income</th><th>Tax Rate</th></tr>
+<tr><td>$0 – $18,200</td><td>0%</td></tr>
+<tr><td>$18,201 – $45,000</td><td>16%</td></tr>
+<tr><td>$45,001 – $135,000</td><td>30%</td></tr>
+<tr><td>$135,001 – $190,000</td><td>37%</td></tr>
+<tr><td>$190,000+</td><td>45%</td></tr>
+</table>
+<h3>Non-Resident</h3>
+<table>
+<tr><th>Taxable Income</th><th>Tax Rate</th></tr>
+<tr><td>$0 – $135,000</td><td>30%</td></tr>
+<tr><td>$135,001 – $190,000</td><td>37%</td></tr>
+<tr><td>$190,000+</td><td>45%</td></tr>
+</table>
+</div>
+
+<footer>
+Estimates only. Based on 2024–25 Australian tax rates.
+</footer>
+</div>
+
+<!-- Obfuscated JavaScript -->
 <script>
-
-function calculateIncomeTax(income) {
-    if (income <= 18200) return 0;
-    if (income <= 45000) return (income - 18200) * 0.16;
-    if (income <= 135000) return 4288 + (income - 45000) * 0.30;
-    if (income <= 190000) return 31288 + (income - 135000) * 0.37;
-    return 51638 + (income - 190000) * 0.45;
-}
-
-function calculateHELP(income) {
-    if (income < 51550) return 0;
-
-    // Simplified HELP bands
-    if (income < 59518) return income * 0.01;
-    if (income < 63089) return income * 0.02;
-    if (income < 66875) return income * 0.025;
-    if (income < 70888) return income * 0.03;
-    if (income < 75141) return income * 0.035;
-    if (income < 79650) return income * 0.04;
-    if (income < 84429) return income * 0.045;
-    if (income < 89505) return income * 0.05;
-    if (income < 94900) return income * 0.055;
-    return income * 0.10;
-}
-
-function formatCurrency(value) {
-    return value.toLocaleString('en-AU', { 
-        style: 'currency', 
-        currency: 'AUD',
-        minimumFractionDigits: 2
-    });
-}
-
-function calculateTax() {
-    const income = parseFloat(document.getElementById("income").value);
-    const hasHELP = document.getElementById("help").checked;
-
-    if (!income || income <= 0) {
-        alert("Please enter a valid income.");
-        return;
-    }
-
-    const incomeTax = calculateIncomeTax(income);
-    const medicare = income * 0.02;
-    const helpRepayment = hasHELP ? calculateHELP(income) : 0;
-
-    const totalTax = incomeTax + medicare + helpRepayment;
-    const netIncome = income - totalTax;
-
-    document.getElementById("incomeTax").innerText = formatCurrency(incomeTax);
-    document.getElementById("medicare").innerText = formatCurrency(medicare);
-    document.getElementById("helpRepayment").innerText = formatCurrency(helpRepayment);
-    document.getElementById("netIncome").innerText = formatCurrency(netIncome);
-    document.getElementById("monthly").innerText = formatCurrency(netIncome / 12);
-    document.getElementById("fortnightly").innerText = formatCurrency(netIncome / 26);
-    document.getElementById("weekly").innerText = formatCurrency(netIncome / 52);
-
-    document.getElementById("results").style.display = "block";
-}
-
+eval(function(p,a,c,k,e,d){e=function(c){return c.toString(36)};if(!''.replace(/^/,String)){while(c--)d[c.toString(a)]=k[c]||c.toString(a);k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1;};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('2 k=0;2 l=0;2 m=0;2 n=0;2 o=0;2 p=0;2 q=0;2 r=0;2 s=0;2 t=function(a){2 b=parseFloat(document.getElementById("income").value);2 c=document.getElementById("residentStatus").value;2 d=document.getElementById("includesSuper").checked;2 e=document.getElementById("help").checked;if(!b||b<=0){alert("Please enter valid income.");return}if(d){b=b/1.115}k=b;f(c,b,e);document.getElementById("taxableIncome").innerText=f2(k);document.getElementById("incomeTax").innerText=f2(l);document.getElementById("medicare").innerText=f2(m);document.getElementById("helpRepayment").innerText=f2(n);document.getElementById("netIncome").innerText=f2(o);document.getElementById("monthly").innerText=f2(p);document.getElementById("fortnightly").innerText=f2(q);document.getElementById("weekly").innerText=f2(r);document.getElementById("results").style.display="block"};function f(c,b,e){if(c==="resident"){l=(b<=18200?0:(b<=45000?(b-18200)*0.16:(b<=135000?4288+(b-45000)*0.30:(b<=190000?31288+(b-135000)*0.37:51638+(b-190000)*0.45))));m=b*0.02}else{l=(b<=135000?b*0.30:(b<=190000?40500+(b-135000)*0.37:60850+(b-190000)*0.45));m=0}n=e?b*0.05:0;o=b-l-m-n;p=o/12;q=o/26;r=o/52}function f2(a){return a.toLocaleString("en-AU",{style:"currency",currency:"AUD"})} window.calculateTax=t;',62,62,'|var|let|includesSuper|HELP|taxableIncome|incomeTax|medicare|helpRepayment|netIncome|monthly|fortnightly|weekly|calculateTax|b|c|d|e|f|o|p|q|r|s|t|k|l|m|n'.split('|'),0,{}))
 </script>
 
 </body>
